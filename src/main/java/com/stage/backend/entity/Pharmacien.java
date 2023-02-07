@@ -13,7 +13,7 @@ import java.io.Serializable;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Pharmacien  implements Serializable {
+public class Pharmacien   {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,6 +23,7 @@ public class Pharmacien  implements Serializable {
     private String matricule;
     private String password;
     private String email;
+    private String role;
 
 
 }
