@@ -5,6 +5,7 @@ import com.stage.backend.entity.Pharmacien;
 import com.stage.backend.repository.PharmacienRepository;
 import com.stage.backend.service.IPharmarcienService;
 import com.stage.backend.service.JwtService;
+import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -83,5 +84,23 @@ public class PharmacienController {
 
 
     }
+
+    @PostMapping("/approuveUser")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public void  approuveUser(@RequestHeader("id") Long id){
+
+        iPharmarcienService.approveUser(id);
+        System.out.println("approved");
+
+    }
+    @PostMapping("/block-user")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public void  blockUser(@RequestHeader("id") Long id){
+
+        iPharmarcienService.blockUser(id);
+        System.out.println("blocked");
+
+    }
+
 
 }

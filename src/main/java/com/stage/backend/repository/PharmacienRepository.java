@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository
 public interface PharmacienRepository extends JpaRepository<Pharmacien,Long> {
 
-   // Optional<Pharmacien> findById(Long aLong);
+    Optional<Pharmacien> findById(Long aLong);
 
     @Query("select p from Pharmacien p where p.email=:email")
     public Optional<Pharmacien> findByEmail(@Param("email")String email);
