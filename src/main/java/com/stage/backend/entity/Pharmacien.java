@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.boot.context.properties.bind.DefaultValue;
+
 import java.io.Serializable;
 
 @Entity
@@ -24,6 +26,7 @@ public class Pharmacien   {
     private String password;
     private String email;
     private String role;
+    private Boolean isActivated=false;
 
 
 }

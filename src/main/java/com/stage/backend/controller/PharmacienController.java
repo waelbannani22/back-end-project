@@ -2,6 +2,7 @@ package com.stage.backend.controller;
 
 import com.stage.backend.Dto.AuthRequest;
 import com.stage.backend.entity.Pharmacien;
+import com.stage.backend.repository.PharmacienRepository;
 import com.stage.backend.service.IPharmarcienService;
 import com.stage.backend.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/Pharmacien")
@@ -25,6 +28,9 @@ public class PharmacienController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private PharmacienRepository pharmacienRepository;
 
     @GetMapping("/welcome")
     @PreAuthorize("hasAuthority('PHARMACIEN')")
@@ -47,12 +53,32 @@ public class PharmacienController {
 
     }
     @PostMapping("/authenticate")
-    public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword()));
-        if (authentication.isAuthenticated()) {
-            return jwtService.generateToken(authRequest.getEmail());
-        } else {
-            throw new UsernameNotFoundException("invalid user request !");
+    public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) throws Exception {
+        Pharmacien pharmacien = pharmacienRepository.findByEmail(authRequest.getEmail()).orElse(null);
+        if(pharmacien==null){
+            throw new Exception("user unknown");
+        }else {
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword()));
+
+            if(Objects.equals(pharmacien.getRole(), "ADMIN")){
+                return jwtService.generateToken(authRequest.getEmail());
+            }else {
+
+                if (authentication.isAuthenticated()) {
+
+                    if(pharmacien.getIsActivated()){
+                        return jwtService.generateToken(authRequest.getEmail());
+                    }else{
+                        throw new Exception("user not verified");
+                    }
+
+                } else {
+                    throw new UsernameNotFoundException("invalid user request !");
+                }
+            }
+
+
+
         }
 
 
