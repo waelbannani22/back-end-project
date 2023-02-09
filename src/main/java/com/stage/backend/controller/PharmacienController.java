@@ -1,19 +1,27 @@
 package com.stage.backend.controller;
 
+import com.fasterxml.jackson.databind.JsonSerializable;
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.mysql.fabric.Response;
 import com.stage.backend.Dto.AuthRequest;
 import com.stage.backend.entity.Pharmacien;
 import com.stage.backend.repository.PharmacienRepository;
 import com.stage.backend.service.IPharmarcienService;
 import com.stage.backend.service.JwtService;
 import jakarta.persistence.EntityManager;
+import org.hibernate.mapping.Any;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Objects;
 
 @RestController
@@ -48,41 +56,63 @@ public class PharmacienController {
 
     @PostMapping("/register-pharmacien")
     @ResponseBody
-    public Pharmacien addClient(@RequestBody Pharmacien c){
+    public ResponseEntity<?> addClient(@RequestBody Pharmacien c){
+        if(Objects.equals(c.getRole(), "ADMIN")){
+            iPharmarcienService.registerPharmacien(c);
+           return ResponseEntity.status(200).body("admin created");
+        }else{
+            if (pharmacienRepository.existsByEmail(c.getEmail())) {
 
-        return iPharmarcienService.registerPharmacien(c);
-
+                return ResponseEntity
+                        .badRequest()
+                        .body("email exists");
+            }
+            iPharmarcienService.registerPharmacien(c);
+            return ResponseEntity.status(200).body("pharmacien created");
+        }
     }
-    @PostMapping("/authenticate")
-    public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) throws Exception {
+    @PostMapping(value="/authenticate",produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> authenticateAndGetToken(@RequestBody AuthRequest authRequest) throws Exception {
         Pharmacien pharmacien = pharmacienRepository.findByEmail(authRequest.getEmail()).orElse(null);
         if(pharmacien==null){
-            throw new Exception("user unknown");
+           return  ResponseEntity.status(404).body("user non found !");
         }else {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword()));
-
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            //*******ADMIN******************
             if(Objects.equals(pharmacien.getRole(), "ADMIN")){
-                return jwtService.generateToken(authRequest.getEmail());
-            }else {
+                String jwt = jwtService.generateToken(authRequest.getEmail());
+                //jwtService.generateToken(String.valueOf(authentication));
+                HashMap<String, Object > map = new HashMap<>();
+                map.put("success",true);
+                map.put("token",jwt);
+                map.put("user", pharmacien);
+                return ResponseEntity.status(200).body(map);
 
+            }else {
+            //********PHARMACIEN****************
                 if (authentication.isAuthenticated()) {
 
                     if(pharmacien.getIsActivated()){
-                        return jwtService.generateToken(authRequest.getEmail());
+                        String jwt= jwtService.generateToken(authRequest.getEmail());
+                        HashMap<String, Object > map = new HashMap<>();
+                        map.put("success",true);
+                        map.put("token",jwt);
+                        map.put("user", pharmacien);
+                        return ResponseEntity.status(200).body(map);
                     }else{
-                        throw new Exception("user not verified");
+                        HashMap<String, Object > map = new HashMap<>();
+                        map.put("success",false);
+                        map.put("message","user not verified!");
+                        return ResponseEntity.status(405).body(map);
                     }
 
                 } else {
-                    throw new UsernameNotFoundException("invalid user request !");
+                    return ResponseEntity.badRequest().body("check your credentials");
                 }
+
             }
-
-
-
         }
-
-
     }
 
     @PostMapping("/approuveUser")

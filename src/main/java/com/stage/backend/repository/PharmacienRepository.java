@@ -13,6 +13,8 @@ public interface PharmacienRepository extends JpaRepository<Pharmacien,Long> {
 
     Optional<Pharmacien> findById(Long aLong);
 
+    Boolean existsByEmail(String email);
+
     @Query("select p from Pharmacien p where p.email=:email")
     public Optional<Pharmacien> findByEmail(@Param("email")String email);
 }
