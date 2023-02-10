@@ -11,6 +11,7 @@ import com.stage.backend.service.EmailService;
 import com.stage.backend.service.IPharmarcienService;
 import com.stage.backend.service.JwtService;
 import jakarta.persistence.EntityManager;
+import lombok.NonNull;
 import org.hibernate.mapping.Any;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -22,6 +23,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -59,27 +61,28 @@ public class PharmacienController {
     }
 
 
-    @PostMapping("/register-pharmacien")
+    @PostMapping(value = "/register-pharmacien",consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<?> addClient(@RequestBody Pharmacien c){
+    public ResponseEntity<?> addClient( @RequestBody Pharmacien pharmacien){
         EmailDetails details = new EmailDetails();
-        details.setRecipient(c.getEmail());
+        details.setRecipient(pharmacien.getEmail());
         details.setSubject("account created");
         details.setAttachment("");
-        if(Objects.equals(c.getRole(), "ADMIN")){
-            iPharmarcienService.registerPharmacien(c);
+        System.out.println(pharmacien.getEmail());
+        if(Objects.equals(pharmacien.getRole(), "ADMIN")){
+            iPharmarcienService.registerPharmacien(pharmacien);
             details.setMsgBody("admin account created");
             String status=emailService.sendSimpleMail(details);
             System.out.println(status);
            return ResponseEntity.status(200).body("admin created");
         }else{
-            if (pharmacienRepository.existsByEmail(c.getEmail())) {
+            if (pharmacienRepository.existsByEmail(pharmacien.getEmail())) {
 
                 return ResponseEntity
                         .badRequest()
                         .body("email exists");
             }
-            iPharmarcienService.registerPharmacien(c);
+            iPharmarcienService.registerPharmacien(pharmacien);
             details.setMsgBody("pharmacien account created,just wait for the admin to approuve your account");
 
             String status=emailService.sendSimpleMail(details);

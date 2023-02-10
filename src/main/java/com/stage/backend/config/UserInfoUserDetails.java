@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 
 public class UserInfoUserDetails implements UserDetails {
 
-    private String email;
-    private String password;
+    private final String email;
+    private final String password;
     private List<GrantedAuthority> authorities;
 
     public UserInfoUserDetails(Pharmacien pharmacien) {

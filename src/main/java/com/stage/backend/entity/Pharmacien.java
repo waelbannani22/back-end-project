@@ -15,7 +15,8 @@ import java.io.Serializable;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Pharmacien   {
+
+public class Pharmacien implements Serializable  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
