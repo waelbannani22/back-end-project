@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.JsonSerializable;
 import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.mysql.fabric.Response;
 import com.stage.backend.Dto.AuthRequest;
+import com.stage.backend.entity.EmailDetails;
 import com.stage.backend.entity.Pharmacien;
 import com.stage.backend.repository.PharmacienRepository;
+import com.stage.backend.service.EmailService;
 import com.stage.backend.service.IPharmarcienService;
 import com.stage.backend.service.JwtService;
 import jakarta.persistence.EntityManager;
@@ -41,6 +43,9 @@ public class PharmacienController {
     @Autowired
     private PharmacienRepository pharmacienRepository;
 
+    @Autowired
+    private EmailService emailService;
+
     @GetMapping("/welcome")
     @PreAuthorize("hasAuthority('PHARMACIEN')")
     public String welcome() {
@@ -57,8 +62,15 @@ public class PharmacienController {
     @PostMapping("/register-pharmacien")
     @ResponseBody
     public ResponseEntity<?> addClient(@RequestBody Pharmacien c){
+        EmailDetails details = new EmailDetails();
+        details.setRecipient(c.getEmail());
+        details.setSubject("account created");
+        details.setAttachment("");
         if(Objects.equals(c.getRole(), "ADMIN")){
             iPharmarcienService.registerPharmacien(c);
+            details.setMsgBody("admin account created");
+            String status=emailService.sendSimpleMail(details);
+            System.out.println(status);
            return ResponseEntity.status(200).body("admin created");
         }else{
             if (pharmacienRepository.existsByEmail(c.getEmail())) {
@@ -68,6 +80,10 @@ public class PharmacienController {
                         .body("email exists");
             }
             iPharmarcienService.registerPharmacien(c);
+            details.setMsgBody("pharmacien account created,just wait for the admin to approuve your account");
+
+            String status=emailService.sendSimpleMail(details);
+            System.out.println(status);
             return ResponseEntity.status(200).body("pharmacien created");
         }
     }
