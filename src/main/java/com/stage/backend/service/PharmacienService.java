@@ -41,4 +41,11 @@ public class PharmacienService  implements IPharmarcienService{
         pharmacien.setIsActivated(false);
         pharmacienRepository.save(pharmacien);
     }
+
+    @Override
+    public void updatePharmacien(Pharmacien pharmacien) {
+        Pharmacien pharmacien1= pharmacienRepository.findById(pharmacien.getId()).orElse(null);
+        pharmacienRepository.save(pharmacien);
+
+    }
 }

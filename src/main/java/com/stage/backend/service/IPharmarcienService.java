@@ -10,4 +10,6 @@ public interface IPharmarcienService {
     void approveUser(Long idpharmacien);
 
     void blockUser(Long idpharmacien);
+
+    void updatePharmacien(Pharmacien pharmacien);
 }

@@ -151,6 +151,15 @@ public class PharmacienController {
         System.out.println("blocked");
 
     }
+    @PutMapping("/update-pharmacien")
+    @PreAuthorize("hasAuthority('PHARMACIEN')")
+    public ResponseEntity<?> updatePharmacien(@RequestBody Pharmacien pharmacien){
+        iPharmarcienService.updatePharmacien(pharmacien);
+        HashMap<String, Object > map = new HashMap<>();
+        map.put("success",true);
+        map.put("user", pharmacien);
+        return ResponseEntity.status(200).body(map);
+    }
 
 
 }

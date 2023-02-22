@@ -27,6 +27,10 @@ public class Pharmacien implements Serializable  {
     private String password;
     private String email;
     private String role;
+    private String tel;
+    private String addresse;
+    private String cin;
+    private String ville;
     private Boolean isActivated=false;
 
 
