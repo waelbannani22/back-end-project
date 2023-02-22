@@ -91,6 +91,7 @@ public class PharmacienController {
         }
     }
     @PostMapping(value="/authenticate",produces = MediaType.APPLICATION_JSON_VALUE)
+    @CrossOrigin("*")
     public ResponseEntity<?> authenticateAndGetToken(@RequestBody AuthRequest authRequest) throws Exception {
         Pharmacien pharmacien = pharmacienRepository.findByEmail(authRequest.getEmail()).orElse(null);
         if(pharmacien==null){
