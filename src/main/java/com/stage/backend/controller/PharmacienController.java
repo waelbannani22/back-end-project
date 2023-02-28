@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonSerializable;
 import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.mysql.fabric.Response;
 import com.stage.backend.Dto.AuthRequest;
+
 import com.stage.backend.entity.EmailDetails;
 import com.stage.backend.entity.Pharmacien;
 import com.stage.backend.repository.PharmacienRepository;
@@ -14,6 +15,7 @@ import jakarta.persistence.EntityManager;
 import lombok.NonNull;
 import org.hibernate.mapping.Any;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,6 +35,7 @@ import java.util.Objects;
 @CrossOrigin("*")
 public class PharmacienController {
 
+
     @Autowired
     private IPharmarcienService iPharmarcienService;
 
@@ -49,9 +52,9 @@ public class PharmacienController {
     private EmailService emailService;
 
     @GetMapping("/welcome")
-    @PreAuthorize("hasAuthority('PHARMACIEN')")
-    public String welcome() {
-        return "Welcome pharcamcien";
+
+    public ResponseEntity<?> welcome() {
+        return ResponseEntity.status(200).body("hello pharmacien");
     }
 
     @GetMapping("/welcomeADMIN")
@@ -93,7 +96,7 @@ public class PharmacienController {
     @PostMapping(value="/authenticate",produces = MediaType.APPLICATION_JSON_VALUE)
     @CrossOrigin("*")
     public ResponseEntity<?> authenticateAndGetToken(@RequestBody AuthRequest authRequest) throws Exception {
-        Pharmacien pharmacien = pharmacienRepository.findByEmail(authRequest.getEmail()).orElse(null);
+        Pharmacien pharmacien = pharmacienRepository.findByEmail(authRequest.getEmail());
         if(pharmacien==null){
            return  ResponseEntity.status(404).body("user non found !");
         }else {
@@ -151,8 +154,9 @@ public class PharmacienController {
         System.out.println("blocked");
 
     }
-    @PutMapping("/update-pharmacien")
+    @PutMapping(value="/update-pharmacien/",produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('PHARMACIEN')")
+    @CrossOrigin("*")
     public ResponseEntity<?> updatePharmacien(@RequestBody Pharmacien pharmacien){
         iPharmarcienService.updatePharmacien(pharmacien);
         HashMap<String, Object > map = new HashMap<>();

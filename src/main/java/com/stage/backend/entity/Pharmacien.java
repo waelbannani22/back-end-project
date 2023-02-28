@@ -32,6 +32,7 @@ public class Pharmacien implements Serializable  {
     private String cin;
     private String ville;
     private Boolean isActivated=false;
+    private String zip ;
 
 
 }

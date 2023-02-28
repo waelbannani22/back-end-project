@@ -1,8 +1,9 @@
 package com.stage.backend.service;
 
+import com.stage.backend.entity.PasswordResetToken;
 import com.stage.backend.entity.Pharmacien;
+import com.stage.backend.repository.PasswordResetTokenRepository;
 import com.stage.backend.repository.PharmacienRepository;
-import org.apache.commons.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,8 @@ public class PharmacienService  implements IPharmarcienService{
     PharmacienRepository pharmacienRepository;
     @Autowired
     PasswordEncoder passwordEncoder;
+    @Autowired
+    PasswordResetTokenRepository passwordResetTokenRepository;
 
     @Override
     public Pharmacien registerPharmacien(Pharmacien pharmacien) {
@@ -47,5 +50,17 @@ public class PharmacienService  implements IPharmarcienService{
         Pharmacien pharmacien1= pharmacienRepository.findById(pharmacien.getId()).orElse(null);
         pharmacienRepository.save(pharmacien);
 
+    }
+    public Pharmacien findUserByEmail(String email) {
+        return pharmacienRepository.findByEmail(email);
+    }
+    public void createPasswordResetTokenForUser(Pharmacien user, String token) {
+        PasswordResetToken myToken = new PasswordResetToken(token, user);
+        passwordResetTokenRepository.save(myToken);
+    }
+    public void updateUserPassword(Pharmacien user, String newPassword) {
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        pharmacienRepository.save(user);
     }
 }

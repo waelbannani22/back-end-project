@@ -34,9 +34,9 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/Pharmacien/register-pharmacien","/Pharmacien/authenticate").permitAll()
+                .requestMatchers("/**").permitAll()
                 .and()
-                .authorizeHttpRequests().requestMatchers("/Pharmacien/**")
+                .authorizeHttpRequests().requestMatchers("/Pharmacien/test")
                 .authenticated().and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

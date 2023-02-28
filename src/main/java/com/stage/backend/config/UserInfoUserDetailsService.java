@@ -16,8 +16,9 @@ public class UserInfoUserDetailsService implements UserDetailsService {
     PharmacienRepository pharmacienRepository;
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<Pharmacien> user= pharmacienRepository.findByEmail(email);
-        return user.map(UserInfoUserDetails::new)
+        Pharmacien user= pharmacienRepository.findByEmail(email);
+        Optional<Pharmacien> op= Optional.of(user);
+        return op.map(UserInfoUserDetails::new)
                 .orElseThrow(() -> new UsernameNotFoundException("user not found " + email));
     }
 }
