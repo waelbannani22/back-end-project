@@ -48,7 +48,7 @@ public class ForgotPasswordController {
             details.setRecipient(user.getEmail());
             details.setSubject("reset password");
             details.setAttachment("");
-            details.setMsgBody("To reset your password, copy the code below:\n"+appUrl+"/Stage/managePassword/confirm-password?token="+token);
+            details.setMsgBody("To reset your password, copy the code below:\n"+token);
             emailService.sendSimpleMail(details);
             HashMap<String, Object > re = new HashMap<>();
             re.put("message","le cle est envoye à"+userEmail);
@@ -81,8 +81,9 @@ public class ForgotPasswordController {
 
         // Delete the used password reset token
         passwordResetTokenRepository.delete(resetToken);
-
-        return ResponseEntity.status(200).body("Password has been reset successfully");
+        HashMap<String, Object > re = new HashMap<>();
+        re.put("message","mdp changé");
+        return ResponseEntity.ok().body(re);
     }
 }
 
