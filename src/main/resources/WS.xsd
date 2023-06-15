@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://192.168.111.102:8080/axis2/services/reclamationWS"
+           xmlns:tns="http://192.168.111.102:8080/axis2/services/reclamationWS"
+           elementFormDefault="qualified"
+>
+
+    <xs:element name="getListReclamationByMatriculeResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="return" type="tns:ReclamationDto" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <!--les types -->
+    <xs:complexType name="ReclamationDto">
+        <xs:sequence>
+
+            <xs:element name="concerrne" type="xs:string" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="TableReferentielDto">
+        <xs:sequence>
+            <xs:element name="codeRubrique" type="xs:string" />
+            <xs:element name="id" type="xs:string" />
+            <xs:element name="libelle" type="xs:string" />
+        </xs:sequence>
+
+
+    </xs:complexType>
+</xs:schema>

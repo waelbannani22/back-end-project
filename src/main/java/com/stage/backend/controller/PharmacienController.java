@@ -80,17 +80,21 @@ public class PharmacienController {
            return ResponseEntity.status(200).body("admin created");
         }else{
             if (pharmacienRepository.existsByEmail(pharmacien.getEmail())) {
+                HashMap<String, Object > map2 = new HashMap<>();
+                map2.put("message","email exists");
 
                 return ResponseEntity
-                        .badRequest()
-                        .body("email exists");
+                        .status(403)
+                        .body(map2);
             }
             iPharmarcienService.registerPharmacien(pharmacien);
             details.setMsgBody("pharmacien account created,just wait for the admin to approuve your account");
 
             String status=emailService.sendSimpleMail(details);
             System.out.println(status);
-            return ResponseEntity.status(200).body("pharmacien created");
+            HashMap<String, Object > map1 = new HashMap<>();
+            map1.put("message","pharmacien created");
+            return ResponseEntity.status(200).body(map1);
         }
     }
     @PostMapping(value="/authenticate",produces = MediaType.APPLICATION_JSON_VALUE)
