@@ -15,4 +15,5 @@ public interface ActeOptiqueService {
     List<ActeOptique> getAllActes();
 
     Optional<ActeOptique> getActe(Long id);
+    List <ActeOptique>getListActeByMatricule(String id);
 }

@@ -90,6 +90,17 @@ public class ActeOptiqueController {
                 .status(200)
                 .body(map2);
     }
+    @GetMapping(value = "/getActesByMatricule/{matriculeAdherent}")
+    public ResponseEntity<?> getActeByMatricule(@PathVariable("matriculeAdherent") String id){
+
+        HashMap<String, Object > map2 = new HashMap<>();
+        map2.put("success",true);
+        map2.put("actes", acteOptiqueService.getListActeByMatricule(id));
+
+        return ResponseEntity
+                .status(200)
+                .body(acteOptiqueService.getListActeByMatricule(id));
+    }
     @PutMapping("/updateActe/{id}")
     public ResponseEntity<?> updateResource(@PathVariable("id") Long id, @RequestBody Map<String, Object> updatedProperties) {
         Optional<ActeOptique> existing = acteOptiqueRepository.findById(id);

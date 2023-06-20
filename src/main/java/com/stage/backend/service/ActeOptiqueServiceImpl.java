@@ -5,6 +5,7 @@ import com.stage.backend.repository.ActeOptiqueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,4 +59,18 @@ public class ActeOptiqueServiceImpl implements  ActeOptiqueService {
     public Optional<ActeOptique> getActe(Long id) {
         return acteOptiqueRepository.findById(id);
     }
+
+   @Override
+    public List<ActeOptique> getListActeByMatricule( String matriculeAdherent) {
+        List<ActeOptique> filteredActes = new ArrayList<>();
+        List<ActeOptique> actes = (List<ActeOptique>) acteOptiqueRepository.findAll();
+        for (ActeOptique acte : actes) {
+            if (acte.getMatriculeAdherent().equals(matriculeAdherent)) {
+                filteredActes.add(acte);
+            }
+        }
+
+        return filteredActes;
+    }
+
 }
